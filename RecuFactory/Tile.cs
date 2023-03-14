@@ -3,30 +3,36 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace RecuFactory
 {
-    internal class Tile
+    public class Tile : IDrawable, IPositioned
     {
-        private readonly Texture2D texture;
-        private readonly Point position;
+        private Point position;
+        private Texture2D texture;
+
+        public Point Position { get =>  position; set => position = value; }
+        public Texture2D Texture { get => texture; private set => texture = value; }
+
 
         internal Tile(int x, int y, Texture2D texture)
         {
-            position = new Point(x, y);
-            this.texture = texture;
+            Position = new Point(x, y);
+            this.Texture = texture;
+        }
+        internal Tile(int x, int y)
+        {
+            Position = new Point(x, y);
         }
 
         internal Tile(Point position, Texture2D texture)
         {
-            this.position = position;
-            this.texture = texture;
+            this.Position = position;
+            this.Texture = texture;
         }
 
-        internal void Draw(SpriteBatch spriteBatch, Camera camera)
+        public void Draw(SpriteBatch spriteBatch, Camera camera)
         {
-            Point cameraPosition = camera.RightTopPosition();
-            Point zoom = camera.Zoom();
-            Point screenPosition = position * zoom - cameraPosition;
-            spriteBatch.Draw(texture, new Rectangle(screenPosition,zoom), Color.White);
+            Point screenPosition = camera.WorldToScreen(Position);
+            spriteBatch.Draw(Texture, new Rectangle(screenPosition, camera.GetScalePoint()), Color.White);
         }
-         
+
     }
 }
